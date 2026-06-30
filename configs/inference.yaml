@@ -1,0 +1,15 @@
+# Tiled/windowed batch inference over the AOI composite.
+extends: aoi_swan_coastal_plain.yaml
+
+inference:
+  model_kind: segmentation         # or "classical" to run the RF/XGBoost map
+  checkpoint: outputs/metrics/unet.pt
+  tile_size: 256
+  overlap: 32                      # halo trimmed when stitching -> seamless mosaic
+  batch_size: 8
+  tta: false
+  write_probabilities: true
+  write_uncertainty: true
+  polygonize: true
+  out_dir: outputs/predictions
+  vector_out_dir: outputs/vector_outputs

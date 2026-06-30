@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install (core + dev + CPU torch)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Ruff lint
+        run: ruff check src tests
+
+      - name: Black format check
+        run: black --check src tests
+
+      - name: Pytest
+        run: pytest -q
+
+  pipeline-smoke:
+    # Proves the full demo pipeline runs end-to-end (data -> report) offline.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - name: Run pipeline (tiny CI config)
+        run: |
+          python -m ecorehab.data.make_demo          --config configs/ci_smoke.yaml
+          python -m ecorehab.labels.build_labels      --config configs/ci_smoke.yaml
+          python -m ecorehab.labels.build_tiles       --config configs/ci_smoke.yaml
+          python -m ecorehab.training.train_classical --config configs/ci_smoke.yaml
+          python -m ecorehab.training.train_segmentation --config configs/ci_smoke.yaml
+          python -m ecorehab.inference.batch_predict  --config configs/ci_smoke.yaml
+          python -m ecorehab.reporting.build_site_report --config configs/ci_smoke.yaml
+      - name: Check key outputs exist
+        run: |
+          test -f outputs/predictions/prediction_mask.tif
+          test -f outputs/vector_outputs/area_summary.csv
+          test -f outputs/reports/site_report.html
+      - name: Upload site report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-report
+          path: outputs/reports/site_report.html
+          if-no-files-found: ignore

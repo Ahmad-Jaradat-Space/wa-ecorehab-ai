@@ -1,0 +1,53 @@
+# Data (keep raw/interim/processed/external out of git; only data/sample/ is committed)
+data/raw/
+data/interim/
+data/processed/
+data/external/
+!data/sample/
+
+# Outputs (keep the dir layout + small committed example plots only)
+outputs/*
+!outputs/examples/
+!outputs/**/.gitkeep
+
+# Models / experiment tracking
+mlruns/
+wandb/
+*.pt
+*.pth
+*.pkl
+*.joblib
+checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# internal build brief (not part of the public repo)
+wa_ecorehab_ai_repo_spec.md
+
+# local-only assistant tooling (never publish)
+CLAUDE.md
+.claude/

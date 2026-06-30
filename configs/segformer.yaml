@@ -1,0 +1,16 @@
+# SegFormer-B0 segmentation (requires the [dl] extra: segmentation-models-pytorch
+# + timm). Demonstrates a modern transformer segmentation head; falls back with a
+# clear error if smp/timm are unavailable.
+extends: aoi_swan_coastal_plain.yaml
+
+segmentation:
+  arch: segformer
+  encoder: mit_b0
+  loss: ce_dice
+  lr: 0.0006
+  weight_decay: 0.01
+  epochs: 25
+  batch_size: 8
+  patience: 8
+  amp: false
+  checkpoint: outputs/metrics/segformer.pt

@@ -1,0 +1,59 @@
+# Base AOI config: Perth-Peel / Swan Coastal Plain.
+# Other configs `extends` this file and override only what they need.
+# Demo mode is ON by default so the pipeline runs offline; set aoi.demo=false and
+# install the [rs] extra to pull real DEA Sentinel-2 + WA vectors.
+
+project:
+  name: wa_ecorehab_swan
+  seed: 42
+  crs: "EPSG:3577"        # Australian Albers, equal-area, metres (hectare reporting)
+  resolution_m: 10.0      # Sentinel-2 native resolution
+
+aoi:
+  name: swan_coastal_plain
+  demo: true
+  lonlat: [115.86, -32.05]   # approx AOI centre (WGS84), Swan Coastal Plain
+
+data:
+  bands: [blue, green, red, rededge, nir, swir1, swir2]
+  # Real-mode (DEA STAC) settings - used only when aoi.demo=false:
+  stac_url: "https://explorer.dea.ga.gov.au/stac"
+  collection: "ga_s2am_ard_3"
+  date_start: "2023-01-01"
+  date_end: "2023-03-31"     # late-summer composite minimises green agriculture confusion
+  max_cloud_cover: 20.0
+  composite: median
+  demo:
+    size_px: 768             # 768 px * 10 m = 7.68 km square AOI
+    seed: 42
+    n_tenements: 2
+
+labels:
+  # Minimum-viable 3-class schema (ids must be contiguous from 0).
+  classes:
+    - {id: 0, name: disturbed_or_cleared,        color: "#d9a05b"}
+    - {id: 1, name: native_remnant_vegetation,   color: "#1b7837"}
+    - {id: 2, name: water_or_wetland,            color: "#2c7fb8"}
+  ignore_index: 255
+  positive_inward_buffer_m: 20.0      # erode native polygons to drop edge pixels
+  boundary_exclusion_buffer_m: 20.0   # ignore a ring around every polygon edge
+  min_polygon_area_ha: 0.5
+  water_ndwi_threshold: 0.10
+  disturbed_ndvi_threshold: 0.25
+  native_ndvi_threshold: 0.45
+
+tiling:
+  tile_size: 128
+  stride: 128                 # no overlap for training tiles
+  min_valid_fraction: 0.5     # drop tiles that are mostly ignore/nodata
+  split:
+    method: spatial_block     # PRIMARY split - blocks prevent spatial leakage
+    block_size_px: 256
+    val_fraction: 0.2
+    test_fraction: 0.2
+    seed: 42
+
+features:
+  indices: [ndvi, evi, ndwi, mndwi, nbr, bsi]
+  include_bands: true
+  texture: false

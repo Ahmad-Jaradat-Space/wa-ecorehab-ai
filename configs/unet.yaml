@@ -1,0 +1,15 @@
+# U-Net segmentation baseline (from-scratch U-Net; needs only torch).
+extends: aoi_swan_coastal_plain.yaml
+
+segmentation:
+  arch: unet            # "smp_unet" / "segformer" available with the [dl] extra
+  encoder: resnet34     # informational for the from-scratch U-Net
+  base_channels: 32
+  loss: ce_dice         # combined cross-entropy + Dice (handles imbalance)
+  lr: 0.001
+  weight_decay: 0.0001
+  epochs: 20
+  batch_size: 16
+  patience: 6           # early stop on val macro-F1
+  amp: false
+  checkpoint: outputs/metrics/unet.pt

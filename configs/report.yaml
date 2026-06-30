@@ -1,0 +1,14 @@
+# Decision-grade HTML site report.
+extends: aoi_swan_coastal_plain.yaml
+
+report:
+  title: "WA EcoRehab AI - Swan Coastal Plain Site Report"
+  aoi_name: "Swan Coastal Plain (demo)"
+  prediction_raster: outputs/predictions/prediction_mask.tif
+  probability_raster: outputs/predictions/native_vegetation_probability.tif
+  uncertainty_raster: outputs/predictions/uncertainty.tif
+  polygons: outputs/vector_outputs/predicted_polygons.gpkg
+  metrics_json: outputs/metrics/unet_metrics.json
+  area_csv: outputs/vector_outputs/area_summary.csv
+  n_bootstrap: 500
+  out_html: outputs/reports/site_report.html

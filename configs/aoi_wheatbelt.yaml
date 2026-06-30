@@ -1,0 +1,17 @@
+# Wheatbelt remnant-vegetation AOI: fragmented native vegetation in an
+# agricultural matrix. Same machinery, different landscape (more, smaller patches).
+extends: aoi_swan_coastal_plain.yaml
+
+project:
+  name: wa_ecorehab_wheatbelt
+  seed: 7
+
+aoi:
+  name: wheatbelt
+  lonlat: [117.65, -31.65]   # approx Wheatbelt fringe (e.g. near Merredin)
+
+data:
+  demo:
+    size_px: 768
+    seed: 7
+    n_tenements: 1

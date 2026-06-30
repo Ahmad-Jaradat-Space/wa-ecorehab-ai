@@ -1,0 +1,95 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wa-ecorehab-ai"
+version = "0.1.0"
+description = "Open-source geospatial AI for native vegetation extent, rehabilitation proxies, and ecological recovery monitoring in Western Australia."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "WA EcoRehab AI contributors" }]
+keywords = [
+  "remote-sensing", "geospatial-ai", "computer-vision", "semantic-segmentation",
+  "pytorch", "sentinel-2", "digital-earth-australia", "ecology",
+  "vegetation-monitoring", "western-australia", "mlops",
+]
+
+# Core dependencies: enough to run the full demo-mode pipeline + tests.
+dependencies = [
+  "numpy",
+  "pandas",
+  "scipy",
+  "scikit-learn",
+  "pyyaml",
+  "pydantic>=2",
+  "rich",
+  "tqdm",
+  "matplotlib",
+  "seaborn",
+  "jinja2",
+  "shapely>=2",
+  "pyproj",
+  "rasterio>=1.3",
+  "geopandas>=0.14",
+  "pyogrio",
+  "rioxarray",
+  "xarray",
+  "scikit-image",
+]
+
+[project.optional-dependencies]
+# Deep-learning segmentation (U-Net works with torch alone; smp/timm/segformer optional).
+dl = ["torch", "torchvision", "albumentations", "segmentation-models-pytorch", "timm"]
+# Gradient-boosted classical baselines + explainability.
+boost = ["xgboost", "lightgbm", "shap"]
+# Real open-data acquisition (DEA STAC, etc.).
+rs = ["pystac-client", "odc-stac", "rasterstats", "rtree"]
+# Interactive maps / reporting extras.
+viz = ["folium", "leafmap", "contextily", "plotly"]
+# Experiment tracking.
+mlops = ["mlflow"]
+# Dev / CI.
+dev = ["pytest", "ruff", "black", "pre-commit", "nbconvert", "jupyter"]
+all = [
+  "wa-ecorehab-ai[dl,boost,rs,viz,mlops,dev]",
+]
+
+[project.scripts]
+ecorehab = "ecorehab.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ecorehab = ["py.typed"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# E/F pyflakes+pycodestyle, I import sort, B bugbear, UP pyupgrade, SIM simplify, C4 comprehensions
+select = ["E", "F", "I", "B", "UP", "SIM", "C4", "W"]
+ignore = [
+  "E501",   # line length handled by black/formatter
+  "B008",   # function calls in argument defaults (typer/pydantic patterns)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B018"]
+"notebooks/*" = ["E402", "F401"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --color=yes"
+filterwarnings = [
+  "ignore::DeprecationWarning",
+  "ignore::UserWarning",
+]

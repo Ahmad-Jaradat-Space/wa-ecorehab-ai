@@ -1,0 +1,18 @@
+# Mining-tenement proxy AOI. We analyse OPEN satellite data over tenement
+# boundaries; this is a PUBLIC-DATA rehabilitation proxy, NOT access to any
+# proprietary mine-rehabilitation labels or compliance assessment.
+extends: aoi_swan_coastal_plain.yaml
+
+project:
+  name: wa_ecorehab_mining_proxy
+  seed: 19
+
+aoi:
+  name: mining_proxy
+  lonlat: [116.05, -30.55]   # generic inland WA resource region (proxy)
+
+data:
+  demo:
+    size_px: 768
+    seed: 19
+    n_tenements: 3            # more tenement overlays for per-polygon area summaries
